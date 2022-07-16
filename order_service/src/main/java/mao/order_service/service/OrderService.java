@@ -2,6 +2,7 @@ package mao.order_service.service;
 
 import mao.order_service.entity.Order;
 import mao.order_service.entity.User;
+import mao.order_service.feign.UserClient;
 import mao.order_service.mapper.OrderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,9 @@ public class OrderService
     @Autowired
     private RestTemplate restTemplate;
 
+    @Autowired
+    private UserClient userClient;
+
     /**
      * 获取订单数据
      *
@@ -43,8 +47,10 @@ public class OrderService
         Long userId = order.getUserId();
         //发起远程调用
         //url
-        String url = "http://userservice/user/" + userId;
-        User user = restTemplate.getForObject(url, User.class);
+        //String url = "http://userservice/user/" + userId;
+        //User user = restTemplate.getForObject(url, User.class);
+        //使用feign发起远程调用
+        User user = userClient.queryById(userId);
         //放入order里
         order.setUser(user);
         //返回数据
